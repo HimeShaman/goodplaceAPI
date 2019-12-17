@@ -10,14 +10,12 @@ class NominatimClient
 {
 
 
-    private $url;
 
     /**
      * NominatimClient constructor.
      */
-    public function __construct($url)
+    public function __construct()
     {
-        $this->url = $url;
     }
 
     public function retrieveCoordinate($adress) {
@@ -25,7 +23,9 @@ class NominatimClient
         $client = new Client(['verify' => false ]);
 
         $encoded_adress = urlencode($adress);
-        $response = $client->get($this->url."?format=json&addressdetails=1&q={$encoded_adress}&format=json&limit=1");
+
+        //Bad ! We must use static constant to store url
+        $response = $client->get("https://nominatim.openstreetmap.org?format=json&addressdetails=1&q={$encoded_adress}&format=json&limit=1");
 
         $json = json_decode($response->getBody()->getContents(),true);
 
