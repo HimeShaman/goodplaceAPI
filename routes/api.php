@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //Activities routes
 Route::get('/activities', 'ActivityController@find');
+Route::get('/activities/{id}','ActivityController@findById');
 Route::post('/activities', 'ActivityController@create');
 Route::put('/activities/{id}', 'ActivityController@update');
 Route::delete('/activities/{id}', 'ActivityController@delete');

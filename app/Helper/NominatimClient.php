@@ -27,14 +27,14 @@ class NominatimClient
         //Bad ! We must use static constant to store url
         $response = $client->get("https://nominatim.openstreetmap.org?format=json&addressdetails=1&q={$encoded_adress}&format=json&limit=1");
 
-        $json = json_decode($response->getBody()->getContents(),true);
+        $json = json_decode($response->getBody()->getContents());
 
         $coordinate = null;
 
         if(isset($json) && count($json) > 0) {
             $coordinate = [
-                "lat" => $json[0]["lat"],
-                "long" => $json[0]["lon"]
+                "lat" => $json[0]->lat,
+                "long" => $json[0]->lon
             ];
         }
 

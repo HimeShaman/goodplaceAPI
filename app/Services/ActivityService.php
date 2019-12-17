@@ -7,7 +7,9 @@ namespace App\Services;
 use App\Helper\NominatimClient;
 use App\Models\Activity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class ActivityService
@@ -66,6 +68,56 @@ class ActivityService
             $this->deleteExistingImage($existing);
             $existing->delete();
         }
+    }
+
+    /**
+     * Return activity by it current id
+     * @param $id
+     * @return mixed
+     */
+    public function findById($id) {
+        return Activity::find($id);
+    }
+
+    /**
+     * find activity by criteria
+     * @param $request
+     * @return \Illuminate\Support\Collection
+     */
+    public function findByCriteria($request) {
+
+        $query = DB::table("activity")
+            ->select("id","name","long","lat","category","image_url",DB::raw("null as dist"),"date");
+
+//        If search param pass
+        if(isset($request->search)) {
+            //build eloquent equivalent of : where (name LIKE "%search%" OR adress LIKE "%search%")
+            $query->where(function($query) use ($request) {
+                $query->where('name', "like","%$request->search%")->orWhere("adress","like","%$request->search%");
+            });
+        }
+
+//        If categorie param pass
+        if(isset($request->category)) {
+            $query->where("category","=",$request->category);
+        }
+
+//        Launch request
+        return $query->get();
+    }
+
+    public function buildValidationRules(bool $update = false): array {
+        $rules = [
+            "name" => "required",
+            "category" => "required",
+            "adress" => "required",
+            "date" => "required"
+        ];
+
+        if($update) {
+            $rules["id"] = "required";
+        }
+        return $rules;
     }
 
     private function buildBasicInformation(Request $request, Activity $activity) : Activity

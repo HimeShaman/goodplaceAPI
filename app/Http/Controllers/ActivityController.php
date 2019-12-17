@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\NominatimClient;
-use App\Models\Activity;
 use App\Services\ActivityService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 use maxh\Nominatim\Nominatim;
+use Symfony\Component\Console\Input\Input;
 
 
 class ActivityController extends Controller
@@ -28,28 +28,105 @@ class ActivityController extends Controller
 
 
     public function create(Request $request) {
-        return $this->activityToActivityJson($this->activityService->createActivity($request));
+        try{
+
+            //Process validation
+            $validator = Validator::make($request->all(),$this->activityService->buildValidationRules());
+
+
+            if($validator->fails()) {
+                return response()->json([
+                    "error" => 400,
+                    "message" => $validator->errors()->all()
+                ],400);
+            }
+
+            //Build and save
+            return $this->activityToActivityFullJson($this->activityService->createActivity($request));
+        }catch (\Exception $e) {
+            Log::error($e);
+            return response()->json(["error" => 500, 'message' => $e->getMessage()],500);
+        }
     }
 
     public function delete(Request $request,$id) {
-        return $this->activityService->deleteActivity($id);
+        try{
+            return $this->activityService->deleteActivity($id);
+        }catch (\Exception $e) {
+            Log::error($e);
+            return response()->json(["error" => 500, 'message' => $e->getMessage()],500);
+        }
     }
 
     public function update(Request $request, $id) {
-        return $this->activityToActivityJson($this->activityService->updateActivity($request,$id));
+        try{
+
+
+            //Process validation
+            $validator = Validator::make($request->all(),$this->activityService->buildValidationRules());
+
+            if($validator->fails()) {
+                return response()->json([
+                    "error" => 400,
+                    "message" => $validator->errors()->all()
+                ],400);
+            }
+
+            //Build and save
+            return $this->activityToActivityFullJson($this->activityService->updateActivity($request,$id));
+        }catch (\Exception $e) {
+            Log::error($e);
+            return response()->json(["error" => 500, 'message' => $e->getMessage()],500);
+        }
     }
 
     public function find(Request $request){
-        $activitiesJson = [];
-        foreach (Activity::all() as $activity) {
-            $activitiesJson[] = $this->activityToActivityJson($activity);
+        try{
+            $activitiesJson = [];
+            $activites = $this->activityService->findByCriteria($request);
+            foreach ( $activites as $activity) {
+                $activitiesJson[] = $this->activityToActivitySearchJson($activity);
+            }
+            return $activitiesJson;
+        }catch (\Exception $e) {
+            Log::error($e);
+            return response()->json(["error" => 500, 'message' => $e->getMessage()],500);
         }
-        Activity::all();
-
-        return $activitiesJson;
     }
 
-    private function activityToActivityJson($activity) {
+    public function findById(Request $request, $id) {
+        try{
+            $activity = $this->activityService->findById($id);
+            if(!isset($activity)) {
+                return response()->json(["error" => 404, 'message' => 'Activity not found'],404);
+            }
+            return $this->activityToActivityFullJson($activity);
+        }catch (\Exception $e) {
+            return response()->json(["error" => 500, 'message' => $e->getMessage()],500);
+        }
+    }
+
+    private function activityToActivitySearchJson($activitySearch) {
+        $activityJson =  [
+            "id" => $activitySearch->id,
+            "name" => $activitySearch->name,
+            "date" => $activitySearch->date,
+            "long" => $activitySearch->long,
+            "lat" => $activitySearch->lat,
+            "category" => $activitySearch->category
+        ];
+        if(isset($activitySearch->image_url)) {
+            $activityJson["image_url"] = asset(Storage::url($activitySearch->image_url));
+        }
+        return $activityJson;
+    }
+
+    private function activityToActivityFullJson($activity) {
+
+        if(!isset($activity)) {
+            return;
+        }
+
         $activityJson =  [
             "id" => $activity->id,
             "name" => $activity->name,
@@ -60,7 +137,8 @@ class ActivityController extends Controller
             "organization" => $activity->organization,
             "contact" => $activity->contact,
             "long" => $activity->long,
-            "lat" => $activity->lat
+            "lat" => $activity->lat,
+            "category" => $activity->category
         ];
 
         if(isset($activity->image_url)) {
