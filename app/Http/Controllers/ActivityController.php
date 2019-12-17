@@ -33,7 +33,7 @@ class ActivityController extends Controller
             $base64 = base64_decode($request->image_base64);
             $file_extension = pathinfo($request->image_filename, PATHINFO_EXTENSION);
 //        Put file in file system
-            $path_file = "activities/".Str::random(10)."/".$file_extension;
+            $path_file = "activities/".Str::random(10).".".$file_extension;
             Storage::put($path_file,$base64);
 
             $activity->image_url = $path_file;
