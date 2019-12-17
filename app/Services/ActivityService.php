@@ -55,7 +55,6 @@ class ActivityService
         $toUpdate->update();
 
         return $toUpdate;
-
     }
 
     /**

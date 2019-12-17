@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use maxh\Nominatim\Nominatim;
 use Symfony\Component\Console\Input\Input;
 
 
@@ -113,6 +112,7 @@ class ActivityController extends Controller
             "date" => $activitySearch->date,
             "long" => $activitySearch->long,
             "lat" => $activitySearch->lat,
+            "dist" => $activitySearch->dist,
             "category" => $activitySearch->category
         ];
         if(isset($activitySearch->image_url)) {
