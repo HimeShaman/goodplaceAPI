@@ -41,7 +41,7 @@ class ActivityService
 
         //If activity not exist we throw error
         if(!isset($existing)) {
-            throw new \Exception("Not activity exist for the given id");
+            throw new \Exception("No activity returned for the given id");
         }
 
         //If new Image specified delete the old one
