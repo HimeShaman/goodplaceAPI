@@ -86,7 +86,8 @@ class ActivityService
     public function findByCriteria($request) {
 
         $query = DB::table("activity")
-            ->selectRaw("id, name, `long`, lat, category, image_url, ST_Distance_Sphere(Point(`long`,lat),point(:select_long,:select_lat)) as dist, date",
+            ->selectRaw("id, name, `long`, lat, category, image_url,
+            ST_Distance_Sphere(Point(`long`,lat),point(:select_long,:select_lat)) as dist, date",
                 ["select_long" => $request->long, "select_lat" => $request->lat]);
 
         //Retrieve dist
