@@ -81,12 +81,19 @@ class ActivityService
     /**
      * find activity by criteria
      * @param $request
-     * @return \Illuminate\Support\Collection
+     * @return array
      */
     public function findByCriteria($request) {
 
         $query = DB::table("activity")
-            ->select("id","name","long","lat","category","image_url",DB::raw("null as dist"),"date");
+            ->selectRaw("id, name, `long`, lat, category, image_url, ST_Distance_Sphere(Point(`long`,lat),point(:select_long,:select_lat)) as dist, date",
+                ["select_long" => $request->long, "select_lat" => $request->lat]);
+
+        //Retrieve dist
+        $dist = isset($request->dist) ? $request->dist : 1000;
+
+        $query->whereRaw("ST_Distance_Sphere(Point(`long`,lat),point(:user_long,:user_lat)) < :dist",
+            ["user_long" => $request->long, "user_lat" => $request->lat,"dist" => $dist]);
 
 //        If search param pass
         if(isset($request->search)) {
@@ -102,7 +109,7 @@ class ActivityService
         }
 
 //        Launch request
-        return $query->get();
+        return $query->get()->toArray();
     }
 
     public function buildValidationRules(bool $update = false): array {
