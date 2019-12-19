@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,3 +26,5 @@ Route::get('/activities/{id}','ActivityController@findById');
 //Users routes
 Route::post('/register','UserController@register');
 Route::post('/login','UserController@login');
+
+

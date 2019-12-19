@@ -149,7 +149,7 @@ class ActivityService
             $file_extension = pathinfo($request->image_filename, PATHINFO_EXTENSION);
 //        Put file in file system
             $path_file = "activities/".Str::random(10).".".$file_extension;
-            Storage::put($path_file,$base64);
+            Storage::disk('public')->put($path_file,$base64);
 
             $activity->image_url = $path_file;
         }
@@ -157,8 +157,8 @@ class ActivityService
     }
 
     private function deleteExistingImage(Activity $activity) : Activity {
-        if(isset($activity->image_url) && Storage::exists($activity->image_url)) {
-            Storage::delete($activity->image_url);
+        if(isset($activity->image_url) && Storage::disk('public')->exists($activity->image_url)) {
+            Storage::disk('public')->delete($activity->image_url);
         }
         return $activity;
     }

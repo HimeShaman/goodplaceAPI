@@ -116,7 +116,7 @@ class ActivityController extends Controller
             "category" => $activitySearch->category
         ];
         if(isset($activitySearch->image_url)) {
-            $activityJson["image_url"] = asset(Storage::url($activitySearch->image_url));
+            $activityJson["image_url"] = asset("uploads/$activitySearch->image_url");
         }
         return $activityJson;
     }
@@ -138,11 +138,11 @@ class ActivityController extends Controller
             "contact" => $activity->contact,
             "long" => $activity->long,
             "lat" => $activity->lat,
-            "category" => $activity->category
+            "category" => $activity->category,
         ];
 
         if(isset($activity->image_url)) {
-            $activityJson["image_url"] = asset(Storage::url($activity->image_url));
+            $activityJson["image_url"] = asset("uploads/$activity->image_url");
         }
 
         return $activityJson;
