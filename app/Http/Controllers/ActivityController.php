@@ -86,7 +86,7 @@ class ActivityController extends Controller
             foreach ( $activites as $activity) {
                 $activitiesJson[] = $this->activityToActivitySearchJson($activity);
             }
-            return $activitiesJson;
+            return ["activities" => $activitiesJson];
         }catch (\Exception $e) {
             Log::error($e);
             return response()->json(["error" => 500, 'message' => $e->getMessage()],500);
