@@ -13,18 +13,21 @@
 */
 
 //Auth route
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:api','cors')->group(function () {
     Route::post('/activities', 'ActivityController@create');
     Route::put('/activities/{id}', 'ActivityController@update');
     Route::delete('/activities/{id}', 'ActivityController@delete');
 });
 
-//Activities routes
-Route::get('/activities', 'ActivityController@find');
-Route::get('/activities/{id}','ActivityController@findById');
+
+Route::middleware('cors')->group(function () {
+    //Activities routes
+    Route::get('/activities', 'ActivityController@find');
+    Route::get('/activities/{id}','ActivityController@findById');
 
 //Users routes
-Route::post('/register','UserController@register');
-Route::post('/login','UserController@login');
+    Route::post('/register','UserController@register');
+    Route::post('/login','UserController@login');
+});
 
 
