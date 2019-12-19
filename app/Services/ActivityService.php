@@ -99,9 +99,10 @@ class ActivityService
 //        If search param pass
         if(isset($request->search)) {
             //build eloquent equivalent of : where (name LIKE "%search%" OR adress LIKE "%search%")
-            $query->where(function($query) use ($request) {
-                $query->where('name', "like","%$request->search%")->orWhere("adress","like","%$request->search%");
-            });
+//            $query->where(function($query) use ($request) {
+//                $query->where('name', "like","%$request->search%")->orWhere("adress","like","%$request->search%");
+//            });
+            $query->whereRaw('(name LIKE :search OR adress LIKE :search2)',["search"=>"%$request->search%","search2"=>"%$request->search%"]);
         }
 
 //        If categorie param pass
