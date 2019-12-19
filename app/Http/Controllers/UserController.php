@@ -63,7 +63,10 @@ class UserController extends Controller
         if(!empty($dbUser) && Hash::check($request->password,$dbUser->password)){
             return $dbUser;
         }else{
-            return 'mabite';
+            return response()->json([
+                "error" => 403,
+                "message" => "Invalid Email or password."
+            ],403);
         }
 
 
