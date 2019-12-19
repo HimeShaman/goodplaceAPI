@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,21 +14,24 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+//Auth route
+Route::middleware('auth:api')->group(function () {
+    Route::post('/activities', 'ActivityController@create');
+    Route::put('/activities/{id}', 'ActivityController@update');
+    Route::delete('/activities/{id}', 'ActivityController@delete');
 });
-
 
 //config routes
 //TODO : delete once set
-Route::get('/makelink', 'StorageLink@makeStorageLink');
+Route::get('/makelink', function() {
+    Artisan::call('storage:link');
+});
 
 //Activities routes
 Route::get('/activities', 'ActivityController@find');
 Route::get('/activities/{id}','ActivityController@findById');
-Route::post('/activities', 'ActivityController@create');
-Route::put('/activities/{id}', 'ActivityController@update');
-Route::delete('/activities/{id}', 'ActivityController@delete');
+
+
 
 //Users routes
 Route::post('/register','UserController@register');
