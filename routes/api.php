@@ -21,17 +21,9 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/activities/{id}', 'ActivityController@delete');
 });
 
-//config routes
-//TODO : delete once set
-Route::get('/makelink', function() {
-    Artisan::call('storage:link');
-});
-
 //Activities routes
 Route::get('/activities', 'ActivityController@find');
 Route::get('/activities/{id}','ActivityController@findById');
-
-
 
 //Users routes
 Route::post('/register','UserController@register');
