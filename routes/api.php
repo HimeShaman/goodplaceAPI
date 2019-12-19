@@ -36,4 +36,3 @@ Route::get('/activities/{id}','ActivityController@findById');
 //Users routes
 Route::post('/register','UserController@register');
 Route::post('/login','UserController@login');
-Route::get('/logout', 'UserController@logout');

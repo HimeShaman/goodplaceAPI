@@ -57,8 +57,15 @@ class UserController extends Controller
             ],400);
         }
 
-        $dbmail = User::find($request)
-        if(!empty());
+        $dbUser = User::where('email',$request->email)
+        ->first();
+
+        if(!empty($dbUser) && Hash::check($request->password,$dbUser->password)){
+            return $dbUser;
+        }else{
+            return 'mabite';
+        }
+
 
 
     }
